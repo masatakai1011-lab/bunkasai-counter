@@ -1,6 +1,6 @@
 // Keeps every file of the counter on the device so it opens without a network.
 // Bump VERSION whenever any file changes, so the iPad picks up the new copy.
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "bunkasai-counter-" + VERSION;
 const FILES = [
   "./",
