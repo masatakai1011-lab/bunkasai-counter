@@ -1,0 +1,18 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "crepe": {
+      "$day": {
+        ".read": "$day.matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)",
+        ".write": "$day.matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)",
+        "$kind": {
+          ".validate": "$kind === 'ordered' || $kind === 'handed'",
+          "$item": {
+            ".validate": "($item === 'choco' || $item === 'anko') && newData.isNumber() && newData.val() >= 0 && newData.val() <= 100000"
+          }
+        }
+      }
+    }
+  }
+}

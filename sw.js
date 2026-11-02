@@ -1,10 +1,16 @@
-// Keeps every file of the counter on the device so it opens without a network.
-// Bump VERSION whenever any file changes, so the iPad picks up the new copy.
-const VERSION = "v1";
-const CACHE = "bunkasai-counter-" + VERSION;
+// Keeps a copy of every file so the page still opens if the network drops for a moment.
+// Network first: whenever the iPad is online it gets the newest files, so updates arrive by themselves.
+// (The counts themselves live in Firebase, not here.)
+const VERSION = "crepe-v1";
+const CACHE = "bunkasai-" + VERSION;
 const FILES = [
   "./",
   "index.html",
+  "register.html",
+  "pass.html",
+  "style.css",
+  "app.js",
+  "firebase-config.js",
   "manifest.webmanifest",
   "apple-touch-icon.png",
   "icon-192.png",
@@ -14,7 +20,9 @@ const FILES = [
   "fonts/ZenKakuGothicNew-500.woff2",
   "fonts/ZenKakuGothicNew-700.woff2",
   "fonts/ZenKakuGothicNew-900.woff2",
-  "vendor/confetti-4.4.0.min.js"
+  "vendor/confetti-4.4.0.min.js",
+  "vendor/firebase-app-compat-10.12.2.js",
+  "vendor/firebase-database-compat-10.12.2.js"
 ];
 
 self.addEventListener("install", (event) => {
@@ -29,16 +37,19 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Offline first: answer from the saved copy, and only go to the network for anything not saved
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const req = event.request;
+  // Only this site's own files; Firebase traffic goes straight to the network
+  if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
   event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((hit) => {
-      if (hit) return hit;
-      if (event.request.mode === "navigate") {
-        return caches.match("index.html").then((page) => page || fetch(event.request));
-      }
-      return fetch(event.request);
-    })
+    fetch(req, { cache: "no-cache" })
+      .then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || caches.match("index.html")))
   );
 });

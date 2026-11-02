@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>受け渡し口｜クレープ</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="受け渡し">
+<meta name="theme-color" content="#eef1f5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="style.css">
+<style>.float { font-family: var(--body); font-weight: 900; }</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="strip">
+    <div class="sum">
+      <span class="role">受け渡し口</span>
+      <div class="sum-main"><span class="sum-label">受け取り待ち</span><span class="sum-num" id="total" aria-live="polite">0</span><span class="sum-unit">個</span></div>
+      <span class="sum-split" id="split">チョコ 0 ／ あんこ 0</span>
+      <span class="sub" id="handed">今日渡した <b>0</b> 個</span>
+    </div>
+    <div class="strip-right">
+      <span class="conn off" id="conn">つないでいます…</span>
+    </div>
+  </div>
+  <div class="stalls">
+    <section class="stall choco" data-item="choco">
+      <button class="tap" id="tap-choco" type="button" data-item="choco" aria-describedby="count-choco">
+        <span class="noren" aria-hidden="true"><span class="flaps"><span class="flap">チ</span><span class="flap">ョ</span><span class="flap">コ</span></span></span>
+        <span class="panel-label" aria-hidden="true">受け取り待ち</span>
+        <span class="sr">チョコを1個渡した</span>
+        <span class="count-wrap"><span class="count" id="count-choco">0</span><span class="unit">個</span></span>
+        <span class="tally" id="tally-choco" aria-hidden="true"></span>
+        <span class="hint" aria-hidden="true">渡したら ここをタップ</span>
+      </button>
+      <button class="minus" id="minus-choco" type="button" data-item="choco">チョコの「渡した」を1個取り消す</button>
+    </section>
+    <section class="stall anko" data-item="anko">
+      <button class="tap" id="tap-anko" type="button" data-item="anko" aria-describedby="count-anko">
+        <span class="noren" aria-hidden="true"><span class="flaps"><span class="flap">あ</span><span class="flap">ん</span><span class="flap">こ</span></span></span>
+        <span class="panel-label" aria-hidden="true">受け取り待ち</span>
+        <span class="sr">あんこを1個渡した</span>
+        <span class="count-wrap"><span class="count" id="count-anko">0</span><span class="unit">個</span></span>
+        <span class="tally" id="tally-anko" aria-hidden="true"></span>
+        <span class="hint" aria-hidden="true">渡したら ここをタップ</span>
+      </button>
+      <button class="minus" id="minus-anko" type="button" data-item="anko">あんこの「渡した」を1個取り消す</button>
+    </section>
+  </div>
+</div>
+
+<script src="vendor/firebase-app-compat-10.12.2.js"></script>
+<script src="vendor/firebase-database-compat-10.12.2.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  var C = window.Crepe, $ = C.$;
+  var last = null;
+
+  function render(s) {
+    C.ITEMS.forEach(function (k) {
+      var dir = last ? s.waiting[k] - last.waiting[k] : 0;
+      C.setCount($("count-" + k), s.waiting[k], dir);
+      C.renderTally($("tally-" + k), s.waiting[k], dir > 0, "いま受け取り待ちはありません");
+      $("tap-" + k).parentNode.classList.toggle("busy", s.waiting[k] > 0);
+      $("tap-" + k).disabled = s.waiting[k] === 0;
+      $("minus-" + k).disabled = s.handed[k] === 0;
+      // A new order from the register sways the curtain so it catches the eye
+      if (dir > 0 && last) C.swayNoren(k);
+    });
+    $("total").textContent = s.waiting.total;
+    $("total").classList.toggle("busy", s.waiting.total > 0);
+    $("split").textContent = "チョコ " + s.waiting.choco + " ／ あんこ " + s.waiting.anko;
+    $("handed").querySelector("b").textContent = s.handed.total;
+    last = s;
+  }
+
+  document.querySelectorAll(".tap").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      C.change("handed", btn.dataset.item, 1);
+      C.floatText(btn, ev, "−1");
+    });
+  });
+  document.querySelectorAll(".minus").forEach(function (btn) {
+    btn.addEventListener("click", function () { C.change("handed", btn.dataset.item, -1); });
+  });
+
+  C.common();
+  C.start(render, C.renderConnection);
+})();
+</script>
+</body>
+</html>
