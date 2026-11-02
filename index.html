@@ -30,7 +30,6 @@
   --anko-mark: #f1b9c8;
   --noren-ink: #fbf7f2;
   --warn: #c2271f;
-  --wait: #ffd36b;
   --display: "Dela Gothic One", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
   --body: "Zen Kaku Gothic New", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
 }
@@ -84,7 +83,7 @@ body {
   body { overflow: auto; }
   .app { height: auto; min-height: 100%; }
   .stalls { grid-template-columns: 1fr; flex: none; }
-  .stall { min-height: 460px; }
+  .stall { min-height: 360px; }
   .tally { max-height: 56px; }
 }
 .stall {
@@ -149,40 +148,12 @@ body {
 @keyframes draw { to { stroke-dashoffset: 0; } }
 
 .minus {
-  flex: none; margin: 0 14px 14px; min-height: 48px; border-radius: 16px; cursor: pointer;
+  flex: none; margin: 0 14px 14px; min-height: 56px; border-radius: 16px; cursor: pointer;
   border: 2px solid color-mix(in srgb, var(--noren-ink) 35%, transparent);
   background: color-mix(in srgb, var(--deep) 75%, transparent); color: var(--noren-ink);
   font: inherit; font-weight: 700; font-size: 1.1rem;
 }
 .minus:disabled { opacity: .4; cursor: default; }
-
-/* Orders waiting to be handed over: 注文 +1 adds one, tapping the panel (= handed over) takes one off */
-.queue {
-  flex: none; margin: 0 14px 10px; display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: stretch;
-}
-.order {
-  min-height: 64px; border-radius: 16px; cursor: pointer; border: 0;
-  background: var(--noren-ink); color: var(--c); font: inherit; font-family: var(--display); font-size: 1.5rem;
-}
-.order:active { transform: scale(.97); }
-.waiting {
-  min-width: 7.5em; padding: 0 12px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: color-mix(in srgb, var(--deep) 75%, transparent); border: 2px solid transparent;
-  font-weight: 700; font-size: .9rem; line-height: 1.2;
-}
-.waiting b { font-family: var(--display); font-weight: 400; font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; }
-.waiting.busy { border-color: var(--wait); color: var(--wait); }
-.cancel {
-  min-height: 64px; padding: 0 14px; border-radius: 16px; cursor: pointer;
-  border: 2px solid color-mix(in srgb, var(--noren-ink) 35%, transparent);
-  background: transparent; color: var(--noren-ink); font: inherit; font-weight: 700; font-size: .95rem;
-}
-.cancel:disabled { opacity: .4; cursor: default; }
-.order:focus-visible, .cancel:focus-visible { outline: 3px solid var(--noren-ink); outline-offset: 3px; }
-.sum-wait { font-weight: 700; font-size: 1.05rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.sum-wait b { font-family: var(--display); font-weight: 400; font-size: 1.6rem; }
-.sum-wait.busy { color: var(--warn); }
-@media (max-width: 600px) { .waiting { min-width: 6em; } .cancel { padding: 0 10px; } }
 .minus:focus-visible, .reset:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 .stall .minus:focus-visible { outline-color: var(--noren-ink); }
 
@@ -213,7 +184,6 @@ body {
       <div class="sum-main"><span class="sum-label">合計</span><span class="sum-num" id="total">0</span><span class="sum-unit">個</span></div>
       <span class="sum-split" id="split">チョコ 0 ／ あんこ 0</span>
       <span class="next" id="next">あと100個で 100個達成</span>
-      <span class="sum-wait" id="wait-total" aria-live="polite">作り待ち <b>0</b> 個</span>
     </div>
     <span class="ready" id="ready" hidden>ネットなしでも動きます</span>
     <button class="reset" id="reset" type="button">リセット</button>
@@ -228,31 +198,21 @@ body {
     <section class="stall choco" data-item="choco">
       <button class="tap" id="tap-choco" type="button" data-item="choco" aria-describedby="count-choco">
         <span class="noren" aria-hidden="true"><span class="flaps"><span class="flap">チ</span><span class="flap">ョ</span><span class="flap">コ</span></span></span>
-        <span class="sr">チョコを1個渡した（売上に1個追加）</span>
+        <span class="sr">チョコを1個追加</span>
         <span class="count-wrap"><span class="count" id="count-choco">0</span><span class="unit">個</span></span>
         <span class="tally" id="tally-choco" aria-hidden="true"></span>
       </button>
-      <div class="queue">
-        <button class="order" id="order-choco" type="button" data-item="choco" aria-label="チョコの注文を1個受けた">注文 +1</button>
-        <span class="waiting" id="waiting-choco"><span>作り待ち</span><span><b id="wait-choco">0</b> 個</span></span>
-        <button class="cancel" id="cancel-choco" type="button" data-item="choco">注文 −1</button>
-      </div>
-      <button class="minus" id="minus-choco" type="button" data-item="choco">売上を1個減らす</button>
+      <button class="minus" id="minus-choco" type="button" data-item="choco">チョコを1個減らす</button>
     </section>
 
     <section class="stall anko" data-item="anko">
       <button class="tap" id="tap-anko" type="button" data-item="anko" aria-describedby="count-anko">
         <span class="noren" aria-hidden="true"><span class="flaps"><span class="flap">あ</span><span class="flap">ん</span><span class="flap">こ</span></span></span>
-        <span class="sr">あんこを1個渡した（売上に1個追加）</span>
+        <span class="sr">あんこを1個追加</span>
         <span class="count-wrap"><span class="count" id="count-anko">0</span><span class="unit">個</span></span>
         <span class="tally" id="tally-anko" aria-hidden="true"></span>
       </button>
-      <div class="queue">
-        <button class="order" id="order-anko" type="button" data-item="anko" aria-label="あんこの注文を1個受けた">注文 +1</button>
-        <span class="waiting" id="waiting-anko"><span>作り待ち</span><span><b id="wait-anko">0</b> 個</span></span>
-        <button class="cancel" id="cancel-anko" type="button" data-item="anko">注文 −1</button>
-      </div>
-      <button class="minus" id="minus-anko" type="button" data-item="anko">売上を1個減らす</button>
+      <button class="minus" id="minus-anko" type="button" data-item="anko">あんこを1個減らす</button>
     </section>
   </div>
 </div>
@@ -265,11 +225,6 @@ body {
   var MAX_GROUPS = 12;
   var NAMES = { choco: "チョコ", anko: "あんこ" };
   var counts = { choco: 0, anko: 0 };
-  // Orders taken but not yet handed over
-  var waiting = { choco: 0, anko: 0 };
-  // For each recent sale: 1 if it used up a waiting order, 0 if not. Lets −1 on the sale put the order back.
-  var MAX_HISTORY = 200;
-  var fromOrder = { choco: [], anko: [] };
   var storageOk = true;
   var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -281,16 +236,6 @@ body {
       counts.choco = Math.max(0, parseInt(saved.choco, 10) || 0);
       counts.anko = Math.max(0, parseInt(saved.anko, 10) || 0);
       savedCelebrated = Math.max(0, parseInt(saved.celebrated, 10) || 0);
-      if (saved.waiting) {
-        waiting.choco = Math.max(0, parseInt(saved.waiting.choco, 10) || 0);
-        waiting.anko = Math.max(0, parseInt(saved.waiting.anko, 10) || 0);
-      }
-      if (saved.fromOrder) {
-        ["choco", "anko"].forEach(function (k) {
-          var h = saved.fromOrder[k];
-          if (Array.isArray(h)) fromOrder[k] = h.slice(-MAX_HISTORY).map(function (v) { return v ? 1 : 0; });
-        });
-      }
     }
   } catch (e) { /* broken saved data: start from 0 */ }
 
@@ -299,10 +244,7 @@ body {
 
   function save() {
     try {
-      localStorage.setItem(KEY, JSON.stringify({
-        choco: counts.choco, anko: counts.anko, celebrated: celebrated,
-        waiting: waiting, fromOrder: fromOrder
-      }));
+      localStorage.setItem(KEY, JSON.stringify({ choco: counts.choco, anko: counts.anko, celebrated: celebrated }));
       storageOk = true;
     }
     catch (e) { storageOk = false; }
@@ -339,30 +281,6 @@ body {
       html += tallyGroup(size, grew && isLast ? size - 1 : -1);
     }
     box.innerHTML = html;
-  }
-
-  function renderWaiting(item, bump) {
-    var n = waiting[item];
-    $("wait-" + item).textContent = n;
-    $("waiting-" + item).classList.toggle("busy", n > 0);
-    $("cancel-" + item).disabled = n === 0;
-    $("cancel-" + item).setAttribute("aria-label", NAMES[item] + "の注文を1個取り消す（作り待ち " + n + "個）");
-    var all = waiting.choco + waiting.anko, top = $("wait-total");
-    top.querySelector("b").textContent = all;
-    top.classList.toggle("busy", all > 0);
-    if (bump) {
-      animate($("wait-" + item), [
-        { transform: "scale(1)" }, { transform: "scale(1.3)" }, { transform: "scale(1)" }
-      ], { duration: 260, easing: "ease-out" });
-    }
-  }
-
-  function changeWaiting(item, delta) {
-    var before = waiting[item];
-    waiting[item] = Math.max(0, before + delta);
-    if (waiting[item] === before) return;
-    save();
-    renderWaiting(item, true);
   }
 
   function renderSummary() {
@@ -439,19 +357,6 @@ body {
     var before = counts[item];
     counts[item] = Math.max(0, before + delta);
     if (counts[item] === before) return false;
-    var h = fromOrder[item];
-    if (delta > 0) {
-      // Handing one over finishes one waiting order, if there is one
-      var used = waiting[item] > 0 ? 1 : 0;
-      waiting[item] -= used;
-      h.push(used);
-      if (h.length > MAX_HISTORY) h.shift();
-      renderWaiting(item, used === 1);
-    } else if (h.pop() === 1) {
-      // Undoing a sale that had finished an order puts that order back in the queue
-      waiting[item] += 1;
-      renderWaiting(item, true);
-    }
     save();
     renderItem(item, delta);
     renderSummary();
@@ -482,13 +387,6 @@ body {
     btn.addEventListener("click", function () { change(btn.dataset.item, -1); });
   });
 
-  document.querySelectorAll(".order").forEach(function (btn) {
-    btn.addEventListener("click", function () { changeWaiting(btn.dataset.item, 1); });
-  });
-  document.querySelectorAll(".cancel").forEach(function (btn) {
-    btn.addEventListener("click", function () { changeWaiting(btn.dataset.item, -1); });
-  });
-
   // Reset needs a second tap within 3 seconds, since confirm() is not available here
   var resetBtn = $("reset"), armTimer = null;
   function disarm() {
@@ -499,9 +397,7 @@ body {
     if (armTimer) {
       disarm();
       counts.choco = 0; counts.anko = 0; celebrated = 0;
-      waiting.choco = 0; waiting.anko = 0; fromOrder.choco = []; fromOrder.anko = [];
       save(); renderItem("choco", 0); renderItem("anko", 0); renderSummary();
-      renderWaiting("choco"); renderWaiting("anko");
     } else {
       resetBtn.classList.add("armed"); resetBtn.textContent = "もう一度押すと 0 に戻ります";
       armTimer = setTimeout(disarm, 3000);
@@ -518,7 +414,6 @@ body {
 
   document.getElementById("notice").hidden = storageOk;
   renderItem("choco", 0); renderItem("anko", 0); renderSummary();
-  renderWaiting("choco"); renderWaiting("anko");
 
   // Opening moment: the curtains drop onto their rods once, then stay still
   document.querySelectorAll(".flap").forEach(function (f, i) {
