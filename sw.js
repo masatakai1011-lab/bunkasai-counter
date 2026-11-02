@@ -1,7 +1,7 @@
 // Keeps a copy of every file so the page still opens if the network drops for a moment.
 // Network first: whenever the iPad is online it gets the newest files, so updates arrive by themselves.
 // (The counts themselves live in Firebase, not here.)
-const VERSION = "crepe-v3";
+const VERSION = "crepe-v4";
 const CACHE = "bunkasai-" + VERSION;
 const FILES = [
   "./",

@@ -13,7 +13,7 @@
   --anko: #edb8c2;
   --red: #b42f26;
   --ok: #1f6e46;
-  --dot: "DotGothic16", "BIZ UDPGothic", ui-monospace, monospace;
+  --num: "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
   --body: "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
   color-scheme: light;
 }
@@ -36,13 +36,13 @@ button { font: inherit; color: inherit; }
 .sum { display: flex; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
 .role { align-self: center; font-weight: 700; font-size: .9rem; padding: 5px 12px; border-radius: 8px; background: var(--ink); color: var(--panel); }
 .sum-label { font-weight: 700; font-size: 1.15rem; }
-.sum-num { font-family: var(--dot); font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.sum-num { font-family: var(--num); font-weight: 700; font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1; font-variant-numeric: tabular-nums; }
 .sum-num.alert { color: var(--red); }
 .sum-unit { font-weight: 700; font-size: 1.15rem; }
 .sum-split { font-size: 1rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .side { display: flex; align-items: center; gap: 10px 18px; flex-wrap: wrap; }
 .sub { font-weight: 700; font-size: 1rem; color: var(--ink-2); }
-.sub b { font-family: var(--dot); font-weight: 400; font-size: 1.8rem; color: var(--ink); }
+.sub b { font-family: var(--num); font-weight: 700; font-size: 1.8rem; color: var(--ink); }
 .sub.alert b { color: var(--red); }
 .conn { font-weight: 700; font-size: .9rem; color: var(--ok); display: inline-flex; align-items: center; gap: 7px; }
 .conn::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
@@ -70,18 +70,18 @@ button { font: inherit; color: inherit; }
 .machine-name { font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: .12em; }
 .machine-hint { font-size: 1rem; color: var(--muted); }
 .machine-count { margin-top: auto; display: flex; align-items: baseline; gap: 8px; color: var(--ink-2); font-weight: 700; }
-.machine-count b { font-family: var(--dot); font-weight: 400; font-size: clamp(4.5rem, 13vh, 8.5rem); line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.machine-count b { font-family: var(--num); font-weight: 700; font-size: clamp(4.5rem, 13vh, 8.5rem); line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
 .slot { width: 78%; height: 14px; border-radius: 7px; background: var(--ink); margin: auto 0 22px; flex: none; }
 
 .ticket {
   box-sizing: border-box; border-radius: 6px; background: var(--paper); color: var(--ink);
-  border-left: 3px dashed rgba(30, 38, 56, .35); font-family: var(--dot);
+  border-left: 3px dashed rgba(30, 38, 56, .35); font-family: var(--num); font-weight: 700;
   display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
 }
 .ticket-new { width: 74%; padding: 14px 22px; margin-top: -6px; font-size: 1.3rem; position: relative; z-index: 1; }
 .ticket-new .no { font-size: clamp(2rem, 4.5vw, 2.6rem); line-height: 1; }
 .ticket-old { width: 68%; padding: 7px 22px; margin-top: 6px; font-size: 1rem; opacity: .45; }
-.ticket-empty { background: transparent; border: 2px dashed var(--line); color: var(--muted); justify-content: center; font-family: var(--body); font-weight: 700; font-size: 1.05rem; }
+.ticket-empty { background: transparent; border: 2px dashed var(--line); color: var(--muted); justify-content: center; font-size: 1.05rem; }
 .outA { animation: outA .42s cubic-bezier(.2, .9, .3, 1) both; }
 .outB { animation: outB .42s cubic-bezier(.2, .9, .3, 1) both; }
 @keyframes outA { from { transform: translateY(-64px); clip-path: inset(64px 0 0 0); } to { transform: none; clip-path: inset(0); } }
@@ -102,7 +102,7 @@ button { font: inherit; color: inherit; }
 .board-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .board-name { font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.3rem); letter-spacing: .12em; }
 .board-count { font-weight: 700; font-size: 1.2rem; }
-.board-count b { font-family: var(--dot); font-weight: 400; font-size: clamp(3.2rem, 9vh, 4.4rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.board-count b { font-family: var(--num); font-weight: 700; font-size: clamp(3.2rem, 9vh, 4.4rem); line-height: 1; font-variant-numeric: tabular-nums; }
 .board-count.alert b { color: var(--red); }
 .rail { height: 16px; border-radius: 8px; background: linear-gradient(#c7ced8, var(--line)); margin: 0 -8px; flex: none; }
 .tickets { display: flex; gap: 12px; margin-top: -10px; padding: 0 6px; min-height: 0; flex: 1; align-items: flex-start; overflow: hidden; }
@@ -110,11 +110,11 @@ button { font: inherit; color: inherit; }
   flex: none; width: clamp(70px, 8.5vw, 96px); height: clamp(150px, 26vh, 200px); box-sizing: border-box;
   border-radius: 0 0 8px 8px; border-top: 10px solid #4b5568; background: var(--paper); color: var(--ink);
   padding: 22px 6px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
-  font-family: var(--dot); transform-origin: 50% 0;
+  font-family: var(--num); font-weight: 700; transform-origin: 50% 0;
 }
 .tk .flavor { font-size: .95rem; }
 .tk .no { font-size: .9rem; }
-.tk b { font-weight: 400; font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1; }
+.tk b { font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1; }
 .tk.next { transform: rotate(-3deg); box-shadow: 0 0 0 4px var(--ink); }
 .tk.inA { animation: inA .45s cubic-bezier(.2, .9, .3, 1.2) both; }
 .tk.inB { animation: inB .45s cubic-bezier(.2, .9, .3, 1.2) both; }
@@ -124,7 +124,7 @@ button { font: inherit; color: inherit; }
 .swingB { animation: swingB .45s ease-out; }
 @keyframes swingA { 35% { transform: translateX(-16px); } }
 @keyframes swingB { 35% { transform: translateX(-16px); } }
-.more { align-self: center; font-family: var(--dot); font-size: 1.5rem; }
+.more { align-self: center; font-family: var(--num); font-weight: 700; font-size: 1.5rem; }
 .none { align-self: center; padding-left: 8px; font-weight: 700; font-size: 1.1rem; color: var(--muted); }
 .give {
   flex: none; min-height: 80px; border: 0; border-radius: 16px; background: var(--ink); color: var(--panel);
