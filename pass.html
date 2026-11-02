@@ -66,22 +66,75 @@
   var SHOW = 4; // tickets clipped to the rail; the rest show as "+N"
   var last = null, enter = 0;
 
+  var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var EASE = "cubic-bezier(.22,.61,.36,1)";
+
+  function ticketsHtml(name, o, h, w, arrivedFrom) {
+    // Waiting tickets: the ones after the last handed over, up to the last ordered; the oldest is next
+    if (w === 0) return '<span class="none">待っている券はありません</span>';
+    var html = "";
+    for (var n = h + 1; n <= o && n <= h + SHOW; n++) {
+      var cls = "tk" + (n === h + 1 ? " next" : "") + (arrivedFrom && n > arrivedFrom ? (enter % 2 ? " inA" : " inB") : "");
+      html += '<span class="' + cls + '" data-no="' + n + '"><span class="flavor">' + name + '</span><span class="no">No.</span><b>' + C.ticketNo(n) + "</b></span>";
+    }
+    if (w > SHOW) html += '<span class="more">+' + (w - SHOW) + "</span>";
+    return html;
+  }
+
+  // Redraw the rail so tickets flow instead of jumping: the handed ticket slips down off the rail
+  // and fades, the rest glide left into place, and the new first ticket eases into its tilt.
+  function drawRail(box, html, leavingNo) {
+    var animate = !reduceMotion && box.animate && last;
+    var before = {}, wasNext = {}, ghost = null;
+    if (animate) {
+      var boxRect = box.getBoundingClientRect();
+      box.querySelectorAll(".tk[data-no]").forEach(function (el) {
+        before[el.dataset.no] = el.getBoundingClientRect();
+        wasNext[el.dataset.no] = el.classList.contains("next");
+        if (el.dataset.no === String(leavingNo)) {
+          var r = el.getBoundingClientRect();
+          ghost = el.cloneNode(true);
+          ghost.classList.remove("inA", "inB");
+          ghost.removeAttribute("data-no");
+          ghost.style.position = "absolute";
+          ghost.style.left = (r.left - boxRect.left) + "px";
+          ghost.style.top = (r.top - boxRect.top) + "px";
+          ghost.style.pointerEvents = "none";
+        }
+      });
+    }
+    box.innerHTML = html;
+    if (!animate) return;
+    box.querySelectorAll(".tk[data-no]").forEach(function (el, i) {
+      var r0 = before[el.dataset.no], r1 = el.getBoundingClientRect();
+      if (r0) {
+        var dx = r0.left - r1.left;
+        if (dx) el.animate([{ transform: "translateX(" + dx + "px)" }, { transform: "none" }], { duration: 460, delay: i * 30, easing: EASE, fill: "backwards" });
+        if (el.classList.contains("next") && !wasNext[el.dataset.no]) {
+          el.animate([{ rotate: "0deg", boxShadow: "0 0 0 0 rgba(30,38,56,0)" }, { rotate: "-3deg", boxShadow: "0 0 0 4px rgba(30,38,56,1)" }], { duration: 460, delay: 120, easing: EASE, fill: "backwards" });
+        }
+      } else if (!el.classList.contains("inA") && !el.classList.contains("inB")) {
+        // A ticket that was hidden behind "+N" (or put back) slides in from the side
+        el.animate([{ opacity: 0, transform: "translateX(28px)" }, { opacity: 1, transform: "none" }], { duration: 460, delay: 80 + i * 30, easing: EASE, fill: "backwards" });
+      }
+    });
+    if (ghost) {
+      box.appendChild(ghost);
+      var a = ghost.animate([
+        { opacity: 1, transform: "none" },
+        { opacity: 0, transform: "translate(-10px, 46px) rotate(-6deg)" }
+      ], { duration: 420, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" });
+      a.onfinish = function () { ghost.remove(); };
+    }
+  }
+
   function render(s) {
     C.ITEMS.forEach(function (k) {
       var name = C.NAMES[k], o = s.ordered[k], h = s.handed[k], w = s.waiting[k];
-      var box = $("tickets-" + k), give = $("give-" + k), undo = $("undo-" + k);
+      var give = $("give-" + k), undo = $("undo-" + k);
       var arrived = last && o > last.ordered[k], gone = last && h > last.handed[k];
       if (arrived) enter++;
-      // Waiting tickets: the ones after the last handed over, up to the last ordered; the oldest is next
-      var html = "";
-      for (var n = h + 1; n <= o && n <= h + SHOW; n++) {
-        var cls = "tk" + (n === h + 1 ? " next" : "") + (arrived && n > last.ordered[k] ? (enter % 2 ? " inA" : " inB") : "");
-        html += '<span class="' + cls + '"><span class="flavor">' + name + '</span><span class="no">No.</span><b>' + C.ticketNo(n) + "</b></span>";
-      }
-      if (w > SHOW) html += '<span class="more">+' + (w - SHOW) + "</span>";
-      if (w === 0) html = '<span class="none">待っている券はありません</span>';
-      box.innerHTML = html;
-      if (gone) C.replay(box, "swingA", "swingB");
+      drawRail($("tickets-" + k), ticketsHtml(name, o, h, w, arrived ? last.ordered[k] : 0), gone ? last.handed[k] + 1 : null);
 
       $("wait-" + k).querySelector("b").textContent = w;
       $("wait-" + k).classList.toggle("alert", w > 0);

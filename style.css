@@ -105,7 +105,7 @@ button { font: inherit; color: inherit; }
 .board-count b { font-family: var(--num); font-weight: 700; font-size: clamp(3.2rem, 9vh, 4.4rem); line-height: 1; font-variant-numeric: tabular-nums; }
 .board-count.alert b { color: var(--red); }
 .rail { height: 16px; border-radius: 8px; background: linear-gradient(#c7ced8, var(--line)); margin: 0 -8px; flex: none; }
-.tickets { display: flex; gap: 12px; margin-top: -10px; padding: 0 6px; min-height: 0; flex: 1; align-items: flex-start; overflow: hidden; }
+.tickets { position: relative; display: flex; gap: 12px; margin-top: -10px; padding: 0 6px; min-height: 0; flex: 1; align-items: flex-start; overflow: hidden; }
 .tk {
   flex: none; width: clamp(70px, 8.5vw, 96px); height: clamp(150px, 26vh, 200px); box-sizing: border-box;
   border-radius: 0 0 8px 8px; border-top: 10px solid #4b5568; background: var(--paper); color: var(--ink);
@@ -115,15 +115,11 @@ button { font: inherit; color: inherit; }
 .tk .flavor { font-size: .95rem; }
 .tk .no { font-size: .9rem; }
 .tk b { font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1; }
-.tk.next { transform: rotate(-3deg); box-shadow: 0 0 0 4px var(--ink); }
+.tk.next { rotate: -3deg; box-shadow: 0 0 0 4px var(--ink); }
 .tk.inA { animation: inA .45s cubic-bezier(.2, .9, .3, 1.2) both; }
 .tk.inB { animation: inB .45s cubic-bezier(.2, .9, .3, 1.2) both; }
 @keyframes inA { from { transform: translateY(-30px) rotate(6deg); opacity: 0; } }
 @keyframes inB { from { transform: translateY(-30px) rotate(6deg); opacity: 0; } }
-.swingA { animation: swingA .45s ease-out; }
-.swingB { animation: swingB .45s ease-out; }
-@keyframes swingA { 35% { transform: translateX(-16px); } }
-@keyframes swingB { 35% { transform: translateX(-16px); } }
 .more { align-self: center; font-family: var(--num); font-weight: 700; font-size: 1.5rem; }
 .none { align-self: center; padding-left: 8px; font-weight: 700; font-size: 1.1rem; color: var(--muted); }
 .give {
@@ -151,7 +147,7 @@ button { font: inherit; color: inherit; }
   .machine, .board { min-height: 340px; flex: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .outA, .outB, .tk.inA, .tk.inB, .swingA, .swingB { animation: none; }
+  .outA, .outB, .tk.inA, .tk.inB { animation: none; }
 }
 
 /* Only the number printed on a ticket uses the ticket-printer dot font */
