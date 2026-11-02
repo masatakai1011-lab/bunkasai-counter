@@ -7,24 +7,24 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="クレープ">
-<meta name="theme-color" content="#eef1f5">
+<meta name="theme-color" content="#dde3ea">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=DotGothic16&display=swap">
 <link rel="stylesheet" href="style.css">
 <style>
-.choose { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media (max-width: 600px) { .choose { grid-template-columns: 1fr; } }
+.choose { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 3vw, 36px); }
+@media (max-width: 640px) { .choose { grid-template-columns: 1fr; } }
 .choose a {
-  border-radius: 26px; text-decoration: none; color: var(--noren-ink); background: var(--choco);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 32px 20px; text-align: center;
+  border-radius: 22px; text-decoration: none; color: var(--ink); background: var(--panel); box-shadow: 0 6px 0 var(--shade);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 32px 20px; text-align: center;
 }
-.choose a.pass { background: var(--anko); }
-.choose a:active { filter: brightness(1.1); }
-.choose b { font-family: var(--body); font-weight: 900; font-size: clamp(2.4rem, 7vw, 4.4rem); line-height: 1.1; }
-.choose span { font-weight: 700; font-size: 1.1rem; opacity: .85; }
-.choose a:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; }
-h1.top { font-weight: 900; font-size: 1.8rem; margin: 0; }
+.choose a:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--shade); }
+.choose b { font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: .1em; }
+.choose span { font-size: 1.1rem; color: var(--ink-2); line-height: 1.6; }
+h1.top { font-weight: 700; font-size: 1.6rem; margin: 0; }
 </style>
 </head>
 <body>
@@ -32,8 +32,8 @@ h1.top { font-weight: 900; font-size: 1.8rem; margin: 0; }
 <div class="app">
   <h1 class="top">このiPadはどこで使いますか？</h1>
   <div class="choose">
-    <a class="reg" href="register.html"><b>レジ</b><span>注文を受けたらタップ<br>今日の売上を見る</span></a>
-    <a class="pass" href="pass.html"><b>受け渡し口</b><span>渡したらタップ<br>受け取り待ちを見る</span></a>
+    <a href="register.html"><b>レジ</b><span>注文を受けたら券を出す<br>今日の売上を見る</span></a>
+    <a href="pass.html"><b>受け渡し口</b><span>待っている券を見る<br>渡したら押す</span></a>
   </div>
 </div>
 <script>
