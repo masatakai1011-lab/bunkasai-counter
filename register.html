@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=DotGothic16&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -78,7 +78,7 @@
         fresh.textContent = "最初の券は No." + C.ticketNo(1);
       }
       old.hidden = n < 2;
-      old.innerHTML = "<span>" + name + "</span><span>No." + C.ticketNo(n - 1) + "</span>";
+      old.innerHTML = "<span>" + name + "</span><span class=\"no\">No." + C.ticketNo(n - 1) + "</span>";
       // Only an order that has not been handed over yet can be cancelled
       undo.disabled = s.waiting[k] === 0;
       undo.textContent = s.waiting[k] ? "No." + C.ticketNo(n) + " を取り消す" : "取り消せる券はありません";

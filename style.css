@@ -153,3 +153,6 @@ button { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .outA, .outB, .tk.inA, .tk.inB, .swingA, .swingB { animation: none; }
 }
+
+/* Only the number printed on a ticket uses the ticket-printer dot font */
+.ticket .no, .tk .no, .tk b { font-family: "DotGothic16", var(--num); font-weight: 400; }
