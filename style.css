@@ -51,6 +51,12 @@ button { font: inherit; color: inherit; }
   min-height: 46px; padding: 0 16px; border-radius: 12px; border: 2px solid var(--line);
   background: transparent; color: var(--ink-2); font-weight: 700; font-size: .95rem; cursor: pointer;
 }
+.sound {
+  min-height: 46px; padding: 0 16px; border-radius: 12px; border: 2px solid var(--line);
+  background: transparent; color: var(--ink-2); font-weight: 700; font-size: .95rem; cursor: pointer;
+}
+.sound.armed { border-color: var(--ink); background: var(--ink); color: var(--panel); }
+.sound.muted { color: var(--muted); border-style: dashed; }
 .reset.armed { border-color: var(--red); color: var(--red); background: var(--panel); }
 
 /* ---- Two columns, one per flavor ---- */
@@ -130,7 +136,7 @@ button { font: inherit; color: inherit; }
 .give:disabled { background: var(--shade); color: var(--muted); }
 
 /* Keyboard focus */
-.machine:focus-visible, .give:focus-visible, .undo:focus-visible, .reset:focus-visible, .choose a:focus-visible {
+.machine:focus-visible, .give:focus-visible, .undo:focus-visible, .reset:focus-visible, .sound:focus-visible, .choose a:focus-visible {
   outline: 3px solid var(--ink); outline-offset: 4px;
 }
 

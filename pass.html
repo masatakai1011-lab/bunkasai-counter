@@ -25,6 +25,7 @@
     </div>
     <div class="side">
       <span class="sub" id="handed">今日渡した <b>0</b> 個</span>
+      <button class="sound" id="sound" type="button" aria-pressed="false">タップして注文の音をオン</button>
       <span class="conn off" id="conn">つないでいます…</span>
     </div>
   </div>
@@ -128,7 +129,70 @@
     }
   }
 
+  // ---- Order chime: a soft two-note "ポロン" when a new order arrives from the register ----
+  // iPad Safari only plays sound after a tap on the page, so the button (or any tap) unlocks it.
+  var audio = null, soundOn = true, lastChime = 0;
+  try { soundOn = localStorage.getItem("crepe-sound") !== "off"; } catch (e) {}
+
+  function audioReady() { return audio && audio.state === "running"; }
+  function unlockAudio() {
+    if (!soundOn) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audio) audio = new AC();
+    if (audio.state !== "running") audio.resume().then(drawSound, drawSound);
+    // A silent blip inside the tap is what actually unlocks playback on iOS
+    var b = audio.createBuffer(1, 1, 22050), src = audio.createBufferSource();
+    src.buffer = b; src.connect(audio.destination); src.start(0);
+    drawSound();
+  }
+  function drawSound() {
+    var btn = $("sound"), ready = soundOn && audioReady();
+    btn.textContent = !soundOn ? "注文の音：なし" : ready ? "注文の音：あり" : "タップして注文の音をオン";
+    btn.setAttribute("aria-pressed", String(ready));
+    btn.classList.toggle("armed", soundOn && !ready);
+    btn.classList.toggle("muted", !soundOn);
+  }
+  function note(freq, at, peak) {
+    var t = audio.currentTime + at, o = audio.createOscillator(), o2 = audio.createOscillator(), g = audio.createGain(), g2 = audio.createGain();
+    o.type = "sine"; o.frequency.value = freq;
+    o2.type = "sine"; o2.frequency.value = freq * 2; g2.gain.value = 0.18; // a faint overtone, like a small bell
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(audio.destination);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+    o.start(t); o2.start(t); o.stop(t + 0.95); o2.stop(t + 0.95);
+  }
+  function chime() {
+    if (!soundOn || !audio) return;
+    var now = Date.now();
+    if (now - lastChime < 1500) return; // several orders in a row ring once
+    lastChime = now;
+    if (audio.state !== "running") { audio.resume().then(drawSound, drawSound); return; }
+    note(784, 0, 0.22);     // G5
+    note(1047, 0.16, 0.2);  // C6
+  }
+
+  $("sound").addEventListener("click", function () {
+    if (soundOn && audioReady()) soundOn = false;
+    else {
+      soundOn = true; unlockAudio();
+      // Play it once so the staff hear the volume
+      if (audio) audio.resume().then(function () { lastChime = 0; chime(); lastChime = 0; drawSound(); }, drawSound);
+    }
+    try { localStorage.setItem("crepe-sound", soundOn ? "on" : "off"); } catch (e) {}
+    drawSound();
+  });
+  // Any other tap (e.g. "渡した") also unlocks the sound
+  document.addEventListener("pointerdown", function (e) { if (e.target.id !== "sound" && !audioReady()) unlockAudio(); });
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && audio && soundOn) audio.resume().then(drawSound, drawSound);
+  });
+  drawSound();
+
   function render(s) {
+    // Ring only when the register added an order (not on first load, undo, or reset)
+    if (last && C.ITEMS.some(function (k) { return s.ordered[k] > last.ordered[k]; })) chime();
     C.ITEMS.forEach(function (k) {
       var name = C.NAMES[k], o = s.ordered[k], h = s.handed[k], w = s.waiting[k];
       var give = $("give-" + k), undo = $("undo-" + k);
